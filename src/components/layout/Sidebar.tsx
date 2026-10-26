@@ -107,16 +107,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Reset Demo Button */}
+      {/* Reset Baseline Button */}
       <div style={{ marginTop: 12 }}>
         <button
           className="btn btn-ghost btn-sm"
           style={{ width: '100%', fontSize: 11, color: '#94a3b8' }}
           onClick={onResetDemo}
-          title="Reset to default seeded Acme demo workspace data"
+          title="Reset workspace to default brand guidelines and evidence repository"
         >
           <RotateCcw size={12} />
-          <span>Reset Demo Workspace</span>
+          <span>Reset Default Baseline</span>
         </button>
       </div>
     </aside>

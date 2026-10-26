@@ -87,18 +87,6 @@ body {
   position: relative;
 }
 
-/* Top Banner (Stitch banner indicator) */
-.demo-top-notice {
-  background: #f1f5f9;
-  border-bottom: 1px solid var(--border-color);
-  padding: 6px 16px;
-  font-size: 12px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
 
 /* Topbar */
 .topbar {

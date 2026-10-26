@@ -30,19 +30,20 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const [filterTab, setFilterTab] = useState<'all' | 'action_required' | 'approved'>('all');
   const [searchFilter, setSearchFilter] = useState('');
 
-  // Calculate dynamic metrics
-  const totalReviewsCount = 142 + (reviews.length > 5 ? reviews.length - 5 : 0);
+  // Calculate real dynamic metrics directly from active review records
+  const totalReviewsCount = reviews.length;
   
   // Calculate total claims flagged across active reviews
   const totalFlaggedClaims = reviews.reduce((sum, r) => {
     return sum + r.findings.filter(f => f.severity !== 'verified').length;
-  }, 35);
+  }, 0);
 
   const pendingApprovalCount = reviews.filter(
     r => r.status === 'Action Required' || r.status === 'Needs Evidence' || r.status === 'Revision Requested'
   ).length;
 
-  const completedReviewsCount = reviews.filter(r => r.status === 'Approved').length + 93;
+  const completedReviewsCount = reviews.filter(r => r.status === 'Approved').length;
+  const passRate = totalReviewsCount > 0 ? Math.round((completedReviewsCount / totalReviewsCount) * 100) : 100;
 
   // Filtered reviews list
   const filteredReviews = reviews.filter(r => {
@@ -77,15 +78,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <h1 className="page-title" style={{ margin: 0 }}>
               Welcome back, Sarah
             </h1>
-            <span className="pill pill-purple" style={{ fontSize: 11 }}>
-              Demo Workspace
+            <span className="pill pill-verified" style={{ fontSize: 11 }}>
+              ● Live Workspace
             </span>
           </div>
           <div className="page-subtitle" style={{ marginBottom: 0 }}>
             Monitor ad compliance scans, resolve flagged claims, and manage brand baselines.
-            <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 3 }}>
-              ℹ Demo Environment • All metrics reflect sample simulation data
-            </div>
           </div>
         </div>
 
@@ -122,11 +120,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="metric-value-row">
             <div className="metric-number">{totalReviewsCount}</div>
             <span className="metric-badge" style={{ background: '#ecfdf5', color: '#059669' }}>
-              ↑ +12%
+              Active
             </span>
           </div>
           <div className="metric-footer">
-            Processed this month <span style={{ color: '#94a3b8' }}>• Simulated</span>
+            Campaign reviews in repository
           </div>
         </div>
 
@@ -145,7 +143,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </span>
           </div>
           <div className="metric-footer">
-            Requires human verification & source citations
+            Claims requiring verification or citation
           </div>
         </div>
 
@@ -160,7 +158,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="metric-value-row">
             <div className="metric-number">{pendingApprovalCount}</div>
             <span className="metric-badge" style={{ background: '#ede9fe', color: '#6d28d9' }}>
-              3 High Priority
+              {pendingApprovalCount} Action Items
             </span>
           </div>
           <div className="metric-footer">
@@ -179,11 +177,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="metric-value-row">
             <div className="metric-number">{completedReviewsCount}</div>
             <span className="metric-badge" style={{ background: '#ecfdf5', color: '#059669' }}>
-              98.2% Accuracy
+              {passRate}% Compliant
             </span>
           </div>
           <div className="metric-footer">
-            Clean or resolved compliance passes
+            Clean or approved compliance passes
           </div>
         </div>
       </div>

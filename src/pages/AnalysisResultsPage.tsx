@@ -441,7 +441,7 @@ export const AnalysisResultsPage: React.FC<AnalysisResultsPageProps> = ({
           </div>
         </div>
 
-        {/* Demo Data Notice Alert */}
+        {/* Compliance Audit Summary */}
         <div style={{ 
           background: '#f8fafc', 
           border: '1px solid var(--border-color)', 
@@ -456,7 +456,7 @@ export const AnalysisResultsPage: React.FC<AnalysisResultsPageProps> = ({
         }}>
           <Info size={15} style={{ color: 'var(--primary)', flexShrink: 0 }} />
           <span>
-            <strong>Sample Demonstration Data:</strong> {criticalCount} Rule Violation, {unverifiedCount} Unsupported Claim, {suggestionCount} Tone Recommendation identified across active Acme baseline.
+            <strong>Compliance Audit Summary:</strong> {criticalCount} Rule Violation{criticalCount === 1 ? '' : 's'}, {unverifiedCount} Unsupported Claim{unverifiedCount === 1 ? '' : 's'}, {suggestionCount} Tone Recommendation{suggestionCount === 1 ? '' : 's'} identified across active baseline.
           </span>
         </div>
 

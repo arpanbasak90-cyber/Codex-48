@@ -225,7 +225,7 @@ export const NewReviewPage: React.FC<NewReviewPageProps> = ({
             border: '1px solid var(--border-color)' 
           }}>
             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-sub)' }}>
-              Quick Demo Presets:
+              Quick Test Templates:
             </span>
             <div style={{ display: 'flex', gap: 6 }}>
               <button 
