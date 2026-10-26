@@ -1,0 +1,33 @@
+/* Print styles for Compliance Audit Report */
+@media print {
+  .sidebar,
+  .topbar,
+  .demo-top-notice,
+  .sticky-action-bar,
+  .btn,
+  .modal-header button,
+  .modal-footer {
+    display: none !important;
+  }
+
+  body, #root, .app-container, .main-viewport {
+    background: white !important;
+    color: black !important;
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .modal-overlay {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+}
