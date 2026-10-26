@@ -7,11 +7,11 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Vitest Tests](https://img.shields.io/badge/Vitest%20Tests-6%2F6%20Passed-success?style=for-the-badge)
-![Vercel Ready](https://img.shields.io/badge/Deployment-Vercel%20Ready-black?style=for-the-badge&logo=vercel)
+![Netlify Live](https://img.shields.io/badge/Live%20Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify)
 
 **An intelligent brand governance and automated marketing content compliance platform engineered for modern enterprise scale.**
 
-[Live Local Server](http://localhost:5173) • [GitHub Repository](https://github.com/arpanbasak90-cyber/Codex-48) • [Architecture](#-system-architecture--how-it-works) • [Problem Statement](#-the-problems-it-solves) • [User Personas](#-target-users--personas)
+[🌐 Live Demo App](https://keen-beignet-8f6a00.netlify.app/) • [GitHub Repository](https://github.com/arpanbasak90-cyber/Codex-48) • [Architecture](#-system-architecture--how-it-works) • [Problem Statement](#-the-problems-it-solves) • [User Personas](#-target-users--personas)
 
 </div>
 
@@ -231,9 +231,13 @@ npm run preview
 
 ---
 
-## ☁️ Deployment Guide (Vercel)
+## ☁️ Live Deployment & Hosting
 
-The repository includes a ready-to-deploy [`vercel.json`](vercel.json) file:
+- **🌐 Live Production URL**: **[https://keen-beignet-8f6a00.netlify.app/](https://keen-beignet-8f6a00.netlify.app/)**
+- **Status**: Live, operational, and accessible without login credentials.
+
+### Deploying to Netlify / Vercel:
+The repository includes SPA routing rewrite configuration in [`vercel.json`](vercel.json) and is pre-configured for instant zero-configuration deployment on both Netlify and Vercel:
 
 ```json
 {
@@ -243,14 +247,11 @@ The repository includes a ready-to-deploy [`vercel.json`](vercel.json) file:
 }
 ```
 
-### Steps to Deploy:
-1. Push all code to your GitHub repository: `git push origin main`.
-2. Navigate to [Vercel](https://vercel.com) and click **"Add New Project"**.
-3. Import your **`Codex-48`** repository.
-4. Framework Preset: **Vite**.
-5. Build Command: `npm run build`.
-6. Output Directory: `dist`.
-7. Click **Deploy**.
+#### Steps:
+1. Connect this repository ([`https://github.com/arpanbasak90-cyber/Codex-48`](https://github.com/arpanbasak90-cyber/Codex-48)) to Netlify or Vercel.
+2. Build Command: `npm run build`.
+3. Output Directory: `dist`.
+4. The application is instantly live with client-side SPA routing preserved across page reloads.
 
 ---
 
