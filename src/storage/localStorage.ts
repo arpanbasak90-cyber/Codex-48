@@ -1,4 +1,4 @@
-import type { BrandRule, EvidenceRecord, ReviewRecord, ReviewVersion, AuditLogEntry } from '../types';
+import type { BrandRule, EvidenceRecord, ReviewRecord, ReviewVersion, AuditLogEntry, UserProfile } from '../types';
 import { DEFAULT_RULES } from '../engine/rules';
 import { DEFAULT_EVIDENCE } from '../engine/evidence';
 import { SEED_REVIEWS } from './seedData';
@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   EVIDENCE: 'brandguard_evidence_v2',
   REVIEWS: 'brandguard_reviews_v2',
   INITIALIZED: 'brandguard_initialized_v2',
+  USER: 'brandguard_user_session_v1',
 };
 
 export class StorageService {
@@ -147,6 +148,37 @@ export class StorageService {
       .filter(n => n > 8000);
     const maxNum = numbers.length > 0 ? Math.max(...numbers) : 8924;
     return `#BG-${maxNum + 1}`;
+  }
+
+  static deleteReview(reviewId: string): void {
+    const reviews = this.getReviews().filter(r => r.id !== reviewId);
+    this.saveReviews(reviews);
+  }
+
+  static clearAllReviews(): void {
+    this.saveReviews([]);
+  }
+
+  // --- USER AUTH / SESSION ---
+  static getUserSession(): UserProfile | null {
+    if (typeof window === 'undefined') return null;
+    const data = localStorage.getItem(STORAGE_KEYS.USER);
+    if (!data) return null;
+    try {
+      return JSON.parse(data);
+    } catch {
+      return null;
+    }
+  }
+
+  static saveUserSession(user: UserProfile): void {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+  }
+
+  static clearUserSession(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(STORAGE_KEYS.USER);
   }
 
   static addAuditLog(reviewId: string, entry: AuditLogEntry): void {

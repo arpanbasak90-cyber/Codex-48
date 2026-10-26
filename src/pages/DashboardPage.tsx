@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { ReviewRecord } from '../types';
+import type { ReviewRecord, UserProfile } from '../types';
 import { 
   FileText, 
   AlertTriangle, 
@@ -9,23 +9,32 @@ import {
   ArrowRight, 
   Plus, 
   BookOpen, 
-  Search
+  Search,
+  Trash2
 } from 'lucide-react';
 
 interface DashboardPageProps {
   reviews: ReviewRecord[];
   rulesCount: number;
+  evidenceCount: number;
+  user: UserProfile | null;
   onOpenReview: (reviewId: string) => void;
   onNewReview: () => void;
   onOpenGuidelines: () => void;
+  onDeleteReview?: (reviewId: string) => void;
+  onClearAllReviews?: () => void;
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({
   reviews,
   rulesCount,
+  evidenceCount,
+  user,
   onOpenReview,
   onNewReview,
   onOpenGuidelines,
+  onDeleteReview,
+  onClearAllReviews,
 }) => {
   const [filterTab, setFilterTab] = useState<'all' | 'action_required' | 'approved'>('all');
   const [searchFilter, setSearchFilter] = useState('');
@@ -76,14 +85,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
             <h1 className="page-title" style={{ margin: 0 }}>
-              Welcome back, Sarah
+              Welcome back, {user ? user.name : 'Sarah'}
             </h1>
             <span className="pill pill-verified" style={{ fontSize: 11 }}>
               ● Live Workspace
             </span>
           </div>
           <div className="page-subtitle" style={{ marginBottom: 0 }}>
-            Monitor ad compliance scans, resolve flagged claims, and manage brand baselines.
+            Monitor ad compliance scans, resolve flagged claims, and manage brand baselines for {user?.company || 'Enterprise'}.
           </div>
         </div>
 
@@ -198,7 +207,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <span className="policy-enforced-tag">Enforced</span>
             </div>
             <div className="policy-subtext">
-              {rulesCount} Rules Active • 14 Evidence Whitepapers Synced • Continuous Policy Guard • Last scanned 18m ago
+              {rulesCount} Rules Active • {evidenceCount} Evidence Records Synced • Continuous Policy Guard
             </div>
           </div>
         </div>
@@ -265,6 +274,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 onChange={(e) => setSearchFilter(e.target.value)}
               />
             </div>
+
+            {/* Clear All Reviews Button */}
+            {onClearAllReviews && reviews.length > 0 && (
+              <button
+                className="btn btn-ghost btn-sm"
+                style={{ color: '#ef4444', fontSize: 11 }}
+                onClick={onClearAllReviews}
+                title="Clear all campaign review records"
+              >
+                <Trash2 size={13} />
+                <span>Clear History</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -275,17 +297,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <tr>
                 <th style={{ width: '35%' }}>Campaign & Asset</th>
                 <th style={{ width: '15%' }}>Channel</th>
-                <th style={{ width: '25%' }}>AI Compliance Findings</th>
+                <th style={{ width: '22%' }}>AI Compliance Findings</th>
                 <th style={{ width: '12%' }}>Status</th>
-                <th style={{ width: '13%' }}>Reviewed</th>
-                <th style={{ width: '10%', textAlign: 'right' }}>Action</th>
+                <th style={{ width: '10%' }}>Reviewed</th>
+                <th style={{ width: '16%', textAlign: 'right' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredReviews.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
-                    No reviews match the selected filter criteria.
+                    No reviews in repository. Click <strong>+ New Review</strong> to run your first compliance scan.
                   </td>
                 </tr>
               ) : (
@@ -381,15 +403,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
                       {/* Action */}
                       <td style={{ textAlign: 'right' }}>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          style={{ color: 'var(--primary)', fontWeight: 600 }}
-                          onClick={() => onOpenReview(review.id)}
-                          id={`view-review-${review.id.replace('#', '')}`}
-                        >
-                          <span>View Results</span>
-                          <ArrowRight size={13} />
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            style={{ color: 'var(--primary)', fontWeight: 600 }}
+                            onClick={() => onOpenReview(review.id)}
+                            id={`view-review-${review.id.replace('#', '')}`}
+                          >
+                            <span>View Results</span>
+                            <ArrowRight size={13} />
+                          </button>
+                          {onDeleteReview && (
+                            <button
+                              className="btn btn-ghost"
+                              style={{ width: 28, height: 28, padding: 0, color: '#94a3b8' }}
+                              onClick={() => onDeleteReview(review.id)}
+                              title="Delete this review record"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );

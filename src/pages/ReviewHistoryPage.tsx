@@ -5,19 +5,24 @@ import {
   FileText, 
   ArrowRight, 
   CheckCircle2, 
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 
 interface ReviewHistoryPageProps {
   reviews: ReviewRecord[];
   onOpenReview: (reviewId: string) => void;
   onNewReview: () => void;
+  onDeleteReview?: (reviewId: string) => void;
+  onClearAllReviews?: () => void;
 }
 
 export const ReviewHistoryPage: React.FC<ReviewHistoryPageProps> = ({
   reviews,
   onOpenReview,
   onNewReview,
+  onDeleteReview,
+  onClearAllReviews,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -48,10 +53,23 @@ export const ReviewHistoryPage: React.FC<ReviewHistoryPageProps> = ({
           </div>
         </div>
 
-        <button className="btn btn-primary" onClick={onNewReview}>
-          <Plus size={15} />
-          <span>New Review</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {onClearAllReviews && reviews.length > 0 && (
+            <button 
+              className="btn btn-secondary" 
+              style={{ color: '#ef4444' }} 
+              onClick={onClearAllReviews}
+              title="Delete all review records"
+            >
+              <Trash2 size={14} />
+              <span>Clear All History</span>
+            </button>
+          )}
+          <button className="btn btn-primary" onClick={onNewReview}>
+            <Plus size={15} />
+            <span>New Review</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -237,14 +255,26 @@ export const ReviewHistoryPage: React.FC<ReviewHistoryPageProps> = ({
 
                       {/* Action */}
                       <td style={{ textAlign: 'right' }}>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          style={{ color: 'var(--primary)', fontWeight: 600 }}
-                          onClick={() => onOpenReview(review.id)}
-                        >
-                          <span>View Results</span>
-                          <ArrowRight size={13} />
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            style={{ color: 'var(--primary)', fontWeight: 600 }}
+                            onClick={() => onOpenReview(review.id)}
+                          >
+                            <span>View Results</span>
+                            <ArrowRight size={13} />
+                          </button>
+                          {onDeleteReview && (
+                            <button
+                              className="btn btn-ghost"
+                              style={{ width: 28, height: 28, padding: 0, color: '#94a3b8' }}
+                              onClick={() => onDeleteReview(review.id)}
+                              title="Delete review"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );

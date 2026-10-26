@@ -1,4 +1,5 @@
 import React from 'react';
+import type { UserProfile } from '../../types';
 import { 
   LayoutDashboard, 
   PenSquare, 
@@ -7,13 +8,17 @@ import {
   Database, 
   Shield, 
   RotateCcw,
-  ExternalLink 
+  ExternalLink,
+  LogOut,
+  User
 } from 'lucide-react';
 
 interface SidebarProps {
   currentTab: string;
   onNavigate: (tab: string) => void;
   rulesCount: number;
+  user: UserProfile | null;
+  onLogout: () => void;
   onResetDemo: () => void;
 }
 
@@ -21,6 +26,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onNavigate,
   rulesCount,
+  user,
+  onLogout,
   onResetDemo,
 }) => {
   return (
@@ -107,8 +114,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
+      {/* User Session Profile & Logout */}
+      {user && (
+        <div style={{
+          marginTop: 12,
+          padding: '10px 12px',
+          background: '#f8fafc',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius-sm)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <div style={{
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              background: '#eff6ff',
+              color: '#2563eb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: 11,
+              flexShrink: 0,
+            }}>
+              {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || <User size={14} />}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user.name}
+              </div>
+              <div style={{ fontSize: 10.5, color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user.role}
+              </div>
+            </div>
+          </div>
+
+          <button
+            className="btn btn-ghost"
+            style={{ padding: 4, width: 26, height: 26, color: '#94a3b8' }}
+            onClick={onLogout}
+            title="Sign out of workspace"
+          >
+            <LogOut size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Reset Baseline Button */}
-      <div style={{ marginTop: 12 }}>
+      <div style={{ marginTop: 8 }}>
         <button
           className="btn btn-ghost btn-sm"
           style={{ width: '100%', fontSize: 11, color: '#94a3b8' }}

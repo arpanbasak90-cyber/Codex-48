@@ -7,11 +7,13 @@ import { AnalysisResultsPage } from './pages/AnalysisResultsPage';
 import { ReviewHistoryPage } from './pages/ReviewHistoryPage';
 import { BrandGuidelinesPage } from './pages/BrandGuidelinesPage';
 import { EvidenceLibraryPage } from './pages/EvidenceLibraryPage';
+import { LoginPage } from './pages/LoginPage';
 import { StorageService } from './storage/localStorage';
-import type { ReviewRecord, BrandRule, EvidenceRecord } from './types';
+import type { ReviewRecord, BrandRule, EvidenceRecord, UserProfile } from './types';
 import './App.css';
 
 export function App() {
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => StorageService.getUserSession());
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [currentReviewId, setCurrentReviewId] = useState<string>('#BG-8924');
   const [reviews, setReviews] = useState<ReviewRecord[]>([]);
@@ -31,8 +33,37 @@ export function App() {
     setEvidenceList(StorageService.getEvidence());
   };
 
+  const handleLogin = (user: UserProfile, startWithCleanHistory = false) => {
+    StorageService.saveUserSession(user);
+    if (startWithCleanHistory) {
+      StorageService.clearAllReviews();
+    }
+    setCurrentUser(user);
+    refreshData();
+    setCurrentTab('dashboard');
+  };
+
+  const handleLogout = () => {
+    StorageService.clearUserSession();
+    setCurrentUser(null);
+  };
+
+  const handleDeleteReview = (reviewId: string) => {
+    if (window.confirm(`Delete review record ${reviewId}?`)) {
+      StorageService.deleteReview(reviewId);
+      refreshData();
+    }
+  };
+
+  const handleClearAllReviews = () => {
+    if (window.confirm('Delete all review history records? This cannot be undone.')) {
+      StorageService.clearAllReviews();
+      refreshData();
+    }
+  };
+
   const handleResetDemo = () => {
-    if (window.confirm('Reset all brand rules and evidence back to official Acme Global 2025 baseline?')) {
+    if (window.confirm('Reset brand rules and baseline evidence back to official Acme Global 2025 standard?')) {
       StorageService.resetToDemo();
       refreshData();
       setCurrentReviewId('#BG-8924');
@@ -71,6 +102,11 @@ export function App() {
     StorageService.addEvidence(newRecord);
     refreshData();
   };
+
+  // If not logged in, show Login Screen
+  if (!currentUser) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   // Find active review for analysis view
   const activeReview = reviews.find(r => r.id === currentReviewId) || reviews[0];
@@ -115,6 +151,8 @@ export function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         rulesCount={rules.filter(r => r.isActive).length}
+        user={currentUser}
+        onLogout={handleLogout}
         onResetDemo={handleResetDemo}
       />
 
@@ -138,9 +176,13 @@ export function App() {
             <DashboardPage
               reviews={reviews}
               rulesCount={rules.filter(r => r.isActive).length}
+              evidenceCount={evidenceList.length}
+              user={currentUser}
               onOpenReview={handleOpenReview}
               onNewReview={() => setCurrentTab('new-review')}
               onOpenGuidelines={() => setCurrentTab('guidelines')}
+              onDeleteReview={handleDeleteReview}
+              onClearAllReviews={handleClearAllReviews}
             />
           )}
 
@@ -167,6 +209,8 @@ export function App() {
               reviews={reviews}
               onOpenReview={handleOpenReview}
               onNewReview={() => setCurrentTab('new-review')}
+              onDeleteReview={handleDeleteReview}
+              onClearAllReviews={handleClearAllReviews}
             />
           )}
 

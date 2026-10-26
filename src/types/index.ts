@@ -7,6 +7,13 @@ export type RuleCategory =
 
 export type Severity = 'critical' | 'warning' | 'suggestion' | 'verified';
 
+export interface UserProfile {
+  name: string;
+  email: string;
+  company: string;
+  role: string;
+}
+
 export interface BrandRule {
   id: string;
   code: string; // e.g. "Policy 4.2", "FTC COMPLIANCE", "Glossary v2.4"
