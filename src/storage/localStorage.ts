@@ -1,22 +1,27 @@
 import type { BrandRule, EvidenceRecord, ReviewRecord, ReviewVersion, AuditLogEntry, UserProfile } from '../types';
 import { DEFAULT_RULES } from '../engine/rules';
 import { DEFAULT_EVIDENCE } from '../engine/evidence';
-import { SEED_REVIEWS } from './seedData';
 
 const STORAGE_KEYS = {
   RULES: 'brandguard_rules_v2',
   EVIDENCE: 'brandguard_evidence_v2',
-  REVIEWS: 'brandguard_reviews_v2',
-  INITIALIZED: 'brandguard_initialized_v2',
+  REVIEWS: 'brandguard_reviews_v3',
+  INITIALIZED: 'brandguard_initialized_v3',
   USER: 'brandguard_user_session_v1',
 };
 
 export class StorageService {
   /**
-   * Initialize local storage with default demo workspace data safely
+   * Initialize local storage with official brand guidelines and evidence repository
    */
   static initialize(): void {
     if (typeof window === 'undefined') return;
+
+    // Clean up legacy mock reviews from storage if present
+    if (localStorage.getItem('brandguard_reviews_v2')) {
+      localStorage.removeItem('brandguard_reviews_v2');
+      localStorage.removeItem('brandguard_initialized_v2');
+    }
 
     const isInitialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
     if (!isInitialized) {
@@ -27,20 +32,20 @@ export class StorageService {
         localStorage.setItem(STORAGE_KEYS.EVIDENCE, JSON.stringify(DEFAULT_EVIDENCE));
       }
       if (!localStorage.getItem(STORAGE_KEYS.REVIEWS)) {
-        localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(SEED_REVIEWS));
+        localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify([]));
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
     }
   }
 
   /**
-   * Reset all workspace data to factory Acme demo state
+   * Reset workspace brand guidelines and baseline evidence repository
    */
   static resetToDemo(): void {
     if (typeof window === 'undefined') return;
     localStorage.setItem(STORAGE_KEYS.RULES, JSON.stringify(DEFAULT_RULES));
     localStorage.setItem(STORAGE_KEYS.EVIDENCE, JSON.stringify(DEFAULT_EVIDENCE));
-    localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(SEED_REVIEWS));
+    localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify([]));
     localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
   }
 
@@ -107,13 +112,18 @@ export class StorageService {
 
   // --- REVIEWS ---
   static getReviews(): ReviewRecord[] {
-    if (typeof window === 'undefined') return SEED_REVIEWS;
+    if (typeof window === 'undefined') return [];
     const data = localStorage.getItem(STORAGE_KEYS.REVIEWS);
-    if (!data) return SEED_REVIEWS;
+    if (!data) return [];
     try {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        // Guarantee no mock simulation reviews are shown
+        return parsed.filter(r => r.id !== '#BG-8924' && r.id !== '#BG-8921' && r.id !== '#BG-8918');
+      }
+      return [];
     } catch {
-      return SEED_REVIEWS;
+      return [];
     }
   }
 
@@ -145,8 +155,8 @@ export class StorageService {
         const match = r.id.match(/\d+/);
         return match ? parseInt(match[0], 10) : 0;
       })
-      .filter(n => n > 8000);
-    const maxNum = numbers.length > 0 ? Math.max(...numbers) : 8924;
+      .filter(n => n > 0);
+    const maxNum = numbers.length > 0 ? Math.max(...numbers) : 8900;
     return `#BG-${maxNum + 1}`;
   }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
 import { DashboardPage } from './pages/DashboardPage';
@@ -10,22 +10,20 @@ import { EvidenceLibraryPage } from './pages/EvidenceLibraryPage';
 import { LoginPage } from './pages/LoginPage';
 import { StorageService } from './storage/localStorage';
 import type { ReviewRecord, BrandRule, EvidenceRecord, UserProfile } from './types';
+import { FileText } from 'lucide-react';
 import './App.css';
 
 export function App() {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => StorageService.getUserSession());
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
-  const [currentReviewId, setCurrentReviewId] = useState<string>('#BG-8924');
-  const [reviews, setReviews] = useState<ReviewRecord[]>([]);
-  const [rules, setRules] = useState<BrandRule[]>([]);
-  const [evidenceList, setEvidenceList] = useState<EvidenceRecord[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Initialize storage safely on mount
-  useEffect(() => {
+  const [currentReviewId, setCurrentReviewId] = useState<string>('');
+  const [reviews, setReviews] = useState<ReviewRecord[]>(() => {
     StorageService.initialize();
-    refreshData();
-  }, []);
+    return StorageService.getReviews();
+  });
+  const [rules, setRules] = useState<BrandRule[]>(() => StorageService.getRules());
+  const [evidenceList, setEvidenceList] = useState<EvidenceRecord[]>(() => StorageService.getEvidence());
+  const [searchQuery, setSearchQuery] = useState('');
 
   const refreshData = () => {
     setReviews(StorageService.getReviews());
@@ -33,11 +31,8 @@ export function App() {
     setEvidenceList(StorageService.getEvidence());
   };
 
-  const handleLogin = (user: UserProfile, startWithCleanHistory = false) => {
+  const handleLogin = (user: UserProfile) => {
     StorageService.saveUserSession(user);
-    if (startWithCleanHistory) {
-      StorageService.clearAllReviews();
-    }
     setCurrentUser(user);
     refreshData();
     setCurrentTab('dashboard');
@@ -66,7 +61,7 @@ export function App() {
     if (window.confirm('Reset brand rules and baseline evidence back to official Acme Global 2025 standard?')) {
       StorageService.resetToDemo();
       refreshData();
-      setCurrentReviewId('#BG-8924');
+      setCurrentReviewId('');
       setCurrentTab('dashboard');
     }
   };
@@ -127,8 +122,7 @@ export function App() {
         return [
           root, 
           { label: 'Reviews', action: () => setCurrentTab('history') }, 
-          { label: activeReview ? `${activeReview.id} (${activeReview.campaignName.slice(0, 18)}...)` : '#BG-8924' }, 
-          { label: 'Analysis Results', active: true }
+          { label: activeReview ? `${activeReview.id} (${activeReview.campaignName.slice(0, 18)}...)` : 'Analysis Results', active: true }
         ];
       case 'history':
         return [root, { label: 'Review History', active: true }];
@@ -194,14 +188,56 @@ export function App() {
             />
           )}
 
-          {currentTab === 'analysis' && activeReview && (
-            <AnalysisResultsPage
-              review={activeReview}
-              rules={rules}
-              evidenceList={evidenceList}
-              onReviewUpdated={handleReviewUpdated}
-              onNavigateHistory={() => setCurrentTab('history')}
-            />
+          {currentTab === 'analysis' && (
+            activeReview ? (
+              <AnalysisResultsPage
+                review={activeReview}
+                rules={rules}
+                evidenceList={evidenceList}
+                onReviewUpdated={handleReviewUpdated}
+                onNavigateHistory={() => setCurrentTab('history')}
+              />
+            ) : (
+              <div className="page-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{
+                  background: 'white',
+                  borderRadius: 12,
+                  border: '1px solid var(--border-color)',
+                  padding: '48px 24px',
+                  maxWidth: 520,
+                  margin: '0 auto',
+                }}>
+                  <div style={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: 12,
+                    background: '#eff6ff',
+                    color: '#2563eb',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 16
+                  }}>
+                    <FileText size={26} />
+                  </div>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: '#0f172a' }}>
+                    No Active Review Selected
+                  </h3>
+                  <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24, lineHeight: 1.5 }}>
+                    You don't have any review in history yet. Create a new campaign review to run real-time compliance evaluation.
+                  </p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setCurrentTab('new-review');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    <span>+ Create New Review</span>
+                  </button>
+                </div>
+              </div>
+            )
           )}
 
           {currentTab === 'history' && (

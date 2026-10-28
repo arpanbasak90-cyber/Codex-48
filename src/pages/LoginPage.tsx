@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import type { UserProfile } from '../types';
-import { Shield, ArrowRight, UserCheck, Lock, Sparkles } from 'lucide-react';
+import { Shield, ArrowRight } from 'lucide-react';
 
 interface LoginPageProps {
-  onLogin: (user: UserProfile, startWithCleanHistory?: boolean) => void;
+  onLogin: (user: UserProfile) => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
@@ -11,7 +11,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('Brand Marketing Lead');
-  const [cleanHistory, setCleanHistory] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -34,32 +33,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
       email: email.trim(),
       company: company.trim(),
       role,
-    }, cleanHistory);
-  };
-
-  const handleQuickLogin = (roleType: 'lead' | 'legal' | 'copywriter') => {
-    if (roleType === 'lead') {
-      onLogin({
-        name: 'Sarah Miller',
-        email: 'sarah.miller@acmeglobal.com',
-        company: 'Acme Global Corp',
-        role: 'Brand Marketing Lead',
-      }, false);
-    } else if (roleType === 'legal') {
-      onLogin({
-        name: 'David Vance, Esq.',
-        email: 'd.vance@acmeglobal.com',
-        company: 'Acme Global Legal',
-        role: 'Compliance & Legal Counsel',
-      }, false);
-    } else {
-      onLogin({
-        name: 'Arpan Basak',
-        email: 'arpan@enterprise.ai',
-        company: 'Vertex AI Corp',
-        role: 'Growth Marketing Director',
-      }, cleanHistory);
-    }
+    });
   };
 
   return (
@@ -173,7 +147,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             </div>
           </div>
 
-          <div className="form-group" style={{ marginBottom: 16 }}>
+          <div className="form-group" style={{ marginBottom: 20 }}>
             <label className="form-label" style={{ fontSize: 12.5 }}>Role / Department</label>
             <select
               className="form-select"
@@ -189,29 +163,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             </select>
           </div>
 
-          {/* Option to start clean */}
-          <div style={{
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: 8,
-            padding: '10px 12px',
-            marginBottom: 20,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}>
-            <input
-              type="checkbox"
-              id="clean-history-checkbox"
-              checked={cleanHistory}
-              onChange={(e) => setCleanHistory(e.target.checked)}
-              style={{ width: 16, height: 16, cursor: 'pointer' }}
-            />
-            <label htmlFor="clean-history-checkbox" style={{ fontSize: 12, color: '#475569', cursor: 'pointer' }}>
-              Start with empty workspace (clear previous review history)
-            </label>
-          </div>
-
           <button
             type="submit"
             className="btn btn-primary"
@@ -222,43 +173,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             <ArrowRight size={15} />
           </button>
         </form>
-
-        {/* Quick Demo Logins for Judges / Testers */}
-        <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
-            Quick 1-Click Access for Evaluation
-          </div>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: 11.5 }}
-              onClick={() => handleQuickLogin('lead')}
-            >
-              <UserCheck size={13} style={{ color: '#2563eb' }} />
-              <span>Sarah (Brand Lead)</span>
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: 11.5 }}
-              onClick={() => handleQuickLogin('legal')}
-            >
-              <Lock size={13} style={{ color: '#059669' }} />
-              <span>David (Legal Counsel)</span>
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary btn-sm"
-              style={{ fontSize: 11.5 }}
-              onClick={() => handleQuickLogin('copywriter')}
-            >
-              <Sparkles size={13} style={{ color: '#7c3aed' }} />
-              <span>Arpan (Growth Director)</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
+

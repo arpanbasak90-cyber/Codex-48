@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import type { ReviewRecord } from '../../types';
 import { Printer, X, FileText } from 'lucide-react';
 
@@ -7,6 +8,8 @@ interface ExportReportModalProps {
 }
 
 export const ExportReportModal: React.FC<ExportReportModalProps> = ({ review, onClose }) => {
+  const [generatedDate] = useState(() => new Date().toLocaleDateString());
+
   const handlePrint = () => {
     window.print();
   };
@@ -23,7 +26,7 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({ review, on
                 Compliance Audit Report — {review.id}
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                {review.campaignName} • Generated {new Date().toLocaleDateString()}
+                {review.campaignName} • Generated {generatedDate}
               </div>
             </div>
           </div>
